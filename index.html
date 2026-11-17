@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Manajemen Produksi & Upah - UMKM Sepatu T-DEE Garut</title>
+  <meta name="description" content="Sistem manajemen produksi dan upah borongan untuk UMKM Sepatu T-DEE Garut - monitoring order, validasi progres, dan rekapitulasi upah.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     LOGIN PAGE
+============================================================ -->
+<div id="page-login" class="page active">
+  <div class="login-container">
+    <div class="login-brand">
+      <div class="login-logo">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 32C6 32 10 20 24 20C38 20 42 32 42 32" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          <path d="M6 32L10 38H38L42 32" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M14 20L16 14H32L34 20" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="24" cy="12" r="3" fill="white"/>
+        </svg>
+      </div>
+      <div class="login-brand-text">
+        <h1>T-DEE</h1>
+        <p>Production System</p>
+      </div>
+    </div>
+    <div class="login-card">
+      <div class="login-card-header">
+        <h2>Selamat Datang</h2>
+        <p>Sistem Manajemen Produksi & Upah Borongan<br><strong>UMKM Sepatu T-DEE Garut</strong></p>
+      </div>
+      <div class="login-card-body">
+        <div class="form-group">
+          <label for="login-username">Username</label>
+          <input type="text" id="login-username" placeholder="Masukkan username" value="admin">
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="Masukkan password" value="••••••">
+        </div>
+        <div class="login-quick-access">
+          <p class="quick-label">Akses Cepat:</p>
+          <div class="quick-btns">
+            <button class="quick-btn quick-btn-owner" onclick="loginAs('pemilik')">
+              <div class="quick-btn-icon"></div>
+              <div class="quick-btn-text">
+                <span class="quick-btn-title">Masuk sebagai Pemilik</span>
+                <span class="quick-btn-sub">Bapak Teddy Rifky</span>
+              </div>
+            </button>
+            <button class="quick-btn quick-btn-admin" onclick="loginAs('admin')">
+              <div class="quick-btn-icon"></div>
+              <div class="quick-btn-text">
+                <span class="quick-btn-title">Masuk sebagai Admin</span>
+                <span class="quick-btn-sub">Admin Operasional</span>
+              </div>
+            </button>
+          </div>
+        </div>
+        <div class="login-info">
+          <span class="info-icon"></span>
+          <span>Klik akses cepat untuk masuk tanpa verifikasi tambahan</span>
+        </div>
+      </div>
+    </div>
+    <div class="login-footer">
+      <p>© 2024 T-DEE Garut · Sistem Manajemen Produksi v1.0</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MAIN APP (after login)
+============================================================ -->
+<div id="page-app" class="page hidden">
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-left">
+      <button class="mobile-menu-btn" id="mobile-menu-btn" onclick="toggleSidebar()">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="header-logo">
+        <div class="header-logo-icon">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 32C6 32 10 20 24 20C38 20 42 32 42 32" stroke="white" stroke-width="3" stroke-linecap="round"/>
+            <path d="M6 32L10 38H38L42 32" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M14 20L16 14H32L34 20" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="header-logo-text">
+          <span class="logo-brand">T-DEE</span>
+          <span class="logo-sub">Production System</span>
+        </div>
+      </div>
+    </div>
+    <div class="header-center">
+      <div class="header-date" id="header-date"></div>
+    </div>
+    <div class="header-right">
+      <!-- Role Switcher -->
+      <div class="role-switcher">
+        <span class="role-label">Peran:</span>
+        <div class="role-toggle">
+          <button class="role-btn active" id="role-btn-pemilik" onclick="switchRole('pemilik')">
+            <span class="role-icon"></span>
+            <span>Pemilik</span>
+          </button>
+          <button class="role-btn" id="role-btn-admin" onclick="switchRole('admin')">
+            <span class="role-icon"></span>
+            <span>Admin</span>
+          </button>
+        </div>
+      </div>
+      <div class="header-user" id="header-user">
+        <div class="user-avatar" id="user-avatar">TR</div>
+        <div class="user-info">
+          <span class="user-name" id="user-name">Bapak Teddy Rifky</span>
+          <span class="user-role" id="user-role">Pemilik</span>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="logout()" title="Keluar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-nav">
+      <div class="nav-section-label">Menu Utama</div>
+      <a class="nav-item active" id="nav-dashboard" onclick="navigateTo('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Dashboard Monitoring</span>
+      </a>
+      <a class="nav-item" id="nav-input" onclick="navigateTo('input')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        <span>Input Progres Harian</span>
+        <span class="nav-badge admin-only">Admin</span>
+      </a>
+      <a class="nav-item" id="nav-upah" onclick="navigateTo('upah')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        <span>Rekapitulasi Upah</span>
+      </a>
+      <a class="nav-item" id="nav-settings" onclick="navigateTo('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Pengaturan Tarif & Pekerja</span>
+      </a>
+    </div>
+    <div class="sidebar-footer">
+      <div class="sidebar-version">T-DEE v1.0 · 2024</div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content" id="main-content">
+
+    <!-- ===== DASHBOARD PAGE ===== -->
+    <div id="content-dashboard" class="content-page active">
+      <div class="page-header">
+        <div class="page-title-wrap">
+          <h1 class="page-title">Dashboard Monitoring Produksi</h1>
+          <p class="page-subtitle">Pantau posisi & progres semua order aktif secara real-time</p>
+        </div>
+        <button class="btn btn-primary pemilik-only" id="btn-buat-order" onclick="openModalOrder()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Buat Rencana Produksi
+        </button>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid" id="kpi-grid">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Alert Keterlambatan -->
+      <div class="alert-box" id="delay-alert" style="display:none">
+        <div class="alert-icon"></div>
+        <div class="alert-content">
+          <strong>Peringatan Keterlambatan!</strong>
+          <span id="delay-alert-text"></span>
+        </div>
+      </div>
+
+      <!-- Order Tracker -->
+      <div class="section-card">
+        <div class="section-card-header">
+          <h2>Tracker Posisi Order</h2>
+          <div class="section-card-actions">
+            <select class="filter-select" id="filter-order-status" onchange="renderOrderTracker()">
+              <option value="all">Semua Status</option>
+              <option value="aktif">Order Aktif</option>
+              <option value="selesai">Selesai</option>
+              <option value="terlambat">Terlambat</option>
+            </select>
+          </div>
+        </div>
+        <div class="order-tracker-container" id="order-tracker">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Log Keterlambatan -->
+      <div class="section-card">
+        <div class="section-card-header">
+          <h2>Log Kendala & Keterlambatan</h2>
+          <span class="badge-count" id="delay-log-count">0</span>
+        </div>
+        <div class="delay-log-container" id="delay-log">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== INPUT PROGRES PAGE ===== -->
+    <div id="content-input" class="content-page">
+      <div class="page-header">
+        <div class="page-title-wrap">
+          <h1 class="page-title">Input Progres Harian</h1>
+          <p class="page-subtitle">Catat hasil kerja pekerja per tahap produksi</p>
+        </div>
+      </div>
+
+      <div class="input-layout">
+        <!-- Form Input -->
+        <div class="input-form-card">
+          <div class="input-form-header">
+            <div class="input-form-icon"></div>
+            <h3>Form Validasi Produksi</h3>
+          </div>
+          <form id="progres-form" onsubmit="submitProgres(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="f-tanggal"> Tanggal Produksi</label>
+                <input type="date" id="f-tanggal" required>
+              </div>
+              <div class="form-group">
+                <label for="f-order"> Order Aktif</label>
+                <select id="f-order" required onchange="updateTahapOptions()">
+                  <option value="">-- Pilih Order --</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="f-tahap"> Tahap Produksi</label>
+                <select id="f-tahap" required onchange="updatePekerjaOptions()">
+                  <option value="">-- Pilih Tahap --</option>
+                  <option value="pola">Pola</option>
+                  <option value="upper">Upper</option>
+                  <option value="sol">Sol</option>
+                  <option value="finishing">Finishing</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="f-pekerja"> Nama Pekerja</label>
+                <select id="f-pekerja" required onchange="updateKuotaInfo()">
+                  <option value="">-- Pilih Pekerja --</option>
+                </select>
+              </div>
+            </div>
+            <div class="kuota-info" id="kuota-info" style="display:none">
+              <div class="kuota-bar-wrap">
+                <div class="kuota-label">
+                  <span>Progres Tahap Ini</span>
+                  <span id="kuota-text">0 / 0 Pasang</span>
+                </div>
+                <div class="kuota-bar">
+                  <div class="kuota-fill" id="kuota-fill" style="width:0%"></div>
+                </div>
+              </div>
+              <div class="kuota-sisa">Sisa kuota: <strong id="kuota-sisa-val">0</strong> pasang</div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="f-jumlah">Jumlah Pasang Diselesaikan</label>
+                <input type="number" id="f-jumlah" min="1" placeholder="Contoh: 12" required>
+              </div>
+              <div class="form-group">
+                <label for="f-catatan">Catatan / Kendala (opsional)</label>
+                <input type="text" id="f-catatan" placeholder="Contoh: Pekerja kurang sehat">
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="reset" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+              <button type="submit" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Simpan & Validasi
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="input-stats-card">
+          <h3>Ringkasan Hari Ini</h3>
+          <div class="today-stats" id="today-stats">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Riwayat Validasi -->
+      <div class="section-card mt-4">
+        <div class="section-card-header">
+          <h2>Riwayat Validasi Harian</h2>
+          <div class="section-card-actions">
+            <select class="filter-select" id="filter-riwayat-tahap" onchange="renderRiwayat()">
+              <option value="all">Semua Tahap</option>
+              <option value="pola">Pola</option>
+              <option value="upper">Upper</option>
+              <option value="sol">Sol</option>
+              <option value="finishing">Finishing</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="riwayat-table">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Order</th>
+                <th>Tahap</th>
+                <th>Pekerja</th>
+                <th>Pasang</th>
+                <th>Upah</th>
+                <th>Catatan</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="riwayat-tbody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== REKAPITULASI UPAH PAGE ===== -->
+    <div id="content-upah" class="content-page">
+      <div class="page-header">
+        <div class="page-title-wrap">
+          <h1 class="page-title">Rekapitulasi Upah Borongan</h1>
+          <p class="page-subtitle">Perhitungan upah otomatis: Jumlah Pasang × Tarif Borongan</p>
+        </div>
+        <button class="btn btn-primary" onclick="printUpah()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Cetak Rekap
+        </button>
+      </div>
+
+      <!-- Filter Periode -->
+      <div class="filter-card">
+        <div class="filter-row">
+          <div class="form-group">
+            <label>Periode Minggu</label>
+            <select id="filter-minggu" onchange="renderUpah()">
+              <!-- Rendered by JS -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Filter Tahap</label>
+            <select id="filter-upah-tahap" onchange="renderUpah()">
+              <option value="all">Semua Tahap</option>
+              <option value="pola">Pola</option>
+              <option value="upper">Upper</option>
+              <option value="sol">Sol</option>
+              <option value="finishing">Finishing</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="upah-summary-grid" id="upah-summary-grid">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Tabel Rekapitulasi -->
+      <div class="section-card">
+        <div class="section-card-header">
+          <h2>Detail Rekapitulasi per Pekerja</h2>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table" id="upah-table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama Pekerja</th>
+                <th>Bagian / Tahap</th>
+                <th>Total Pasang</th>
+                <th>Tarif / Pasang</th>
+                <th>Total Upah</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="upah-tbody">
+            </tbody>
+            <tfoot>
+              <tr class="tfoot-total">
+                <td colspan="5"><strong>Total Pengeluaran Upah</strong></td>
+                <td colspan="2"><strong id="grand-total-upah">Rp 0</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS PAGE ===== -->
+    <div id="content-settings" class="content-page">
+      <div class="page-header">
+        <div class="page-title-wrap">
+          <h1 class="page-title">Pengaturan Tarif & Pekerja</h1>
+          <p class="page-subtitle">Kelola tarif borongan dan data pekerja produksi</p>
+        </div>
+      </div>
+
+      <!-- Tarif Settings -->
+      <div class="section-card">
+        <div class="section-card-header">
+          <h2>Tarif Borongan per Tahap</h2>
+          <span class="section-badge">Rp / Pasang</span>
+        </div>
+        <div class="tarif-grid" id="tarif-grid">
+          <!-- Rendered by JS -->
+        </div>
+        <div class="tarif-actions">
+          <button class="btn btn-primary" onclick="saveTarif()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Simpan Perubahan Tarif
+          </button>
+        </div>
+      </div>
+
+      <!-- Pekerja Settings -->
+      <div class="section-card">
+        <div class="section-card-header">
+          <h2>Data Pekerja Produksi</h2>
+          <button class="btn btn-primary btn-sm" onclick="openModalPekerja()">+ Tambah Pekerja</button>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Nama Pekerja</th>
+                <th>Bagian / Tahap</th>
+                <th>Tarif Berlaku</th>
+                <th>Total Upah (Minggu Ini)</th>
+                <th>Status</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="pekerja-tbody">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ============================================================
+     MODALS
+============================================================ -->
+
+<!-- Modal Buat Order -->
+<div class="modal-overlay" id="modal-order" onclick="closeModalOnOverlay(event, 'modal-order')">
+  <div class="modal-box modal-lg">
+    <div class="modal-header">
+      <h3>Buat Rencana Produksi Baru</h3>
+      <button class="modal-close" onclick="closeModal('modal-order')">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="order-form" onsubmit="submitOrder(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Kode Order</label>
+            <input type="text" id="o-kode" placeholder="Otomatis (contoh: ORD-2024-007)" readonly style="background:#f1f5f9">
+          </div>
+          <div class="form-group">
+            <label>Nama Klien / Toko *</label>
+            <input type="text" id="o-klien" placeholder="Contoh: Toko Sepatu Maju Jaya" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Model Sepatu *</label>
+            <input type="text" id="o-model" placeholder="Contoh: Oxford Classic Pria" required>
+          </div>
+          <div class="form-group">
+            <label>Warna *</label>
+            <input type="text" id="o-warna" placeholder="Contoh: Hitam Glossy" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Total Jumlah Pasang *</label>
+            <input type="number" id="o-jumlah" min="1" placeholder="Contoh: 100" required>
+          </div>
+          <div class="form-group">
+            <label>Target Selesai *</label>
+            <input type="date" id="o-target" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Rincian Ukuran</label>
+          <input type="text" id="o-ukuran" placeholder="Contoh: 38(10), 39(20), 40(30), 41(25), 42(15)">
+        </div>
+        <div class="form-group">
+          <label>Catatan Tambahan</label>
+          <textarea id="o-catatan" rows="2" placeholder="Instruksi khusus, bahan, dll."></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-order')">Batal</button>
+          <button type="submit" class="btn btn-primary">Buat Order</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Slip Upah -->
+<div class="modal-overlay" id="modal-slip" onclick="closeModalOnOverlay(event, 'modal-slip')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Slip Upah Pekerja</h3>
+      <button class="modal-close" onclick="closeModal('modal-slip')">×</button>
+    </div>
+    <div class="modal-body" id="slip-content">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-slip')">Tutup</button>
+      <button class="btn btn-primary" onclick="printSlip()">Cetak Slip</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Tambah Pekerja -->
+<div class="modal-overlay" id="modal-pekerja" onclick="closeModalOnOverlay(event, 'modal-pekerja')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Tambah Pekerja Baru</h3>
+      <button class="modal-close" onclick="closeModal('modal-pekerja')">×</button>
+    </div>
+    <div class="modal-body">
+      <form id="pekerja-form" onsubmit="submitPekerja(event)">
+        <div class="form-group">
+          <label>Nama Pekerja *</label>
+          <input type="text" id="p-nama" placeholder="Nama lengkap" required>
+        </div>
+        <div class="form-group">
+          <label>Bagian / Tahap *</label>
+          <select id="p-tahap" required>
+            <option value="">-- Pilih Tahap --</option>
+            <option value="pola">Pola</option>
+            <option value="upper">Upper</option>
+            <option value="sol">Sol</option>
+            <option value="finishing">Finishing</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>No. Telepon</label>
+          <input type="text" id="p-telp" placeholder="Opsional">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modal-pekerja')">Batal</button>
+          <button type="submit" class="btn btn-primary">Tambah Pekerja</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Detail Order -->
+<div class="modal-overlay" id="modal-detail-order" onclick="closeModalOnOverlay(event, 'modal-detail-order')">
+  <div class="modal-box modal-lg">
+    <div class="modal-header">
+      <h3>Detail Order</h3>
+      <button class="modal-close" onclick="closeModal('modal-detail-order')">×</button>
+    </div>
+    <div class="modal-body" id="detail-order-content">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-detail-order')">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast-container" id="toast-container"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
